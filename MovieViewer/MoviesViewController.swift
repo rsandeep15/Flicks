@@ -10,26 +10,24 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UISearchBarDelegate {
 
-    @IBOutlet weak var tableView: UITableView!
-    
     var movies: [NSDictionary]?
+    var filteredMovies: [NSDictionary]?
     
+    @IBOutlet weak var collectionView: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        tableView.delegate = self
-        tableView.dataSource = self
-        
+        collectionView.dataSource = self
         
         // Initialize a UIRefreshControl
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
-        tableView.insertSubview(refreshControl, at: 0)
-        
+        collectionView.insertSubview(refreshControl, at: 0)
+
         // Network Request Snippet
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
@@ -44,18 +42,13 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                     print(dataDictionary)
         
                     self.movies = dataDictionary["results"] as? [NSDictionary]
-                    self.tableView.reloadData()
+                    self.collectionView.reloadData()
                 }
             }
             MBProgressHUD.hide(for: self.view, animated: true)
 
         }
         task.resume()
-        
-        
-        
-        
-        
     }
     
     // Makes a network request to get updated data
@@ -73,7 +66,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             // ... Use the new data to update the data source ...
             
             // Reload the tableView now that there is new data
-            self.tableView.reloadData()
+            self.collectionView.reloadData()
             
             // Tell the refreshControl to stop spinning
             refreshControl.endRefreshing()
@@ -85,44 +78,5 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if let movies = movies {
-            return movies.count
-        }
-        else {
-            return 0
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        let movie = movies![indexPath.row]
-        let title = movie["title"] as! String
-        let overview = movie["overview"] as! String
-        let poster_path = movie["poster_path"] as! String
-        
-        let baseUrl = "https://image.tmdb.org/t/p/w500"
-        
-        let imageUrl = URL(string: baseUrl + poster_path)
-        
-        cell.posterImage.setImageWith(imageUrl!)
-        
-        cell.title.text = title
-        cell.overview.text = overview
-        
-        
-        
-        return cell;
-    }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
