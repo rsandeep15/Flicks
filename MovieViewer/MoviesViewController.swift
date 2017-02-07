@@ -10,7 +10,7 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UISearchBarDelegate {
+class MoviesViewController: UIViewController, UICollectionViewDataSource {
 
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
@@ -39,7 +39,7 @@ class MoviesViewController: UIViewController, UISearchBarDelegate {
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
-                    print(dataDictionary)
+                    //print(dataDictionary)
         
                     self.movies = dataDictionary["results"] as? [NSDictionary]
                     self.collectionView.reloadData()
@@ -78,5 +78,46 @@ class MoviesViewController: UIViewController, UISearchBarDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if let movies = movies {
+            return movies.count
+        }
+        else {
+            return 0
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! ImageCell
+        let movie = movies![indexPath.row]
+        
+        if let poster_path = movie["poster_path"] as? String {
+            let baseUrl = "https://image.tmdb.org/t/p/w500"
+            let imageUrl = URL(string: baseUrl + poster_path)
+            cell.movie.setImageWith(imageUrl!)
+        }
+        
+
+        
+        return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cell = sender as! UICollectionViewCell
+        let indexPath = collectionView.indexPath(for: cell)
+        let movie = movies![(indexPath?.row)!] as NSDictionary
+        
+        let detailViewController = segue.destination as! DetailViewController
+        detailViewController.movie = movie
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
