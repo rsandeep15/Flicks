@@ -14,6 +14,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
 
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
+    var endpoint: String? = ""
     
     @IBOutlet weak var collectionView: UICollectionView!
     
@@ -30,7 +31,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
 
         // Network Request Snippet
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
+        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint!)?api_key=\(apiKey)")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         
@@ -51,12 +52,13 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
         task.resume()
     }
     
+    
     // Makes a network request to get updated data
     // Updates the tableView with the new data
     // Hides the RefreshControl
     func refreshControlAction(_ refreshControl: UIRefreshControl) {
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")!
+        let url = URL(string: "https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         
         // Configure session so that completion handler is executed on main UI thread
