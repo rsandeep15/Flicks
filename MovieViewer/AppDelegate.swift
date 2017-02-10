@@ -22,13 +22,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let nowPlayingNavController = storyboard.instantiateViewController(withIdentifier: "MoviesNavigationController") as! UINavigationController
         let nowPlayingVC = nowPlayingNavController.topViewController as! MoviesViewController
         nowPlayingVC.endpoint = "now_playing"
+        
+        // Customizing the navigation controller
         nowPlayingNavController.tabBarItem.title = "Now Playing"
         nowPlayingNavController.tabBarItem.image = UIImage(named: "now-playing")
         nowPlayingNavController.tabBarItem.badgeColor = UIColor.gray
         
         let topRatedNavController = storyboard.instantiateViewController(withIdentifier: "MoviesNavigationController") as! UINavigationController
+        
         let topRatedVC = topRatedNavController.topViewController as! MoviesViewController
         topRatedVC.endpoint = "top_rated"
+        
         topRatedNavController.tabBarItem.title = "Top Rated"
         topRatedNavController.tabBarItem.badgeColor = UIColor.blue
         topRatedNavController.tabBarItem.image = UIImage(named: "top-rated")

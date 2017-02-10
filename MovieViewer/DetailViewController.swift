@@ -15,6 +15,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var overviewLabel: UILabel!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var infoView: UIView!
+    @IBOutlet weak var navItem: UINavigationItem!
     
     
     var movie: NSDictionary!
@@ -29,6 +30,8 @@ class DetailViewController: UIViewController {
         titleLabel.text = title
         overviewLabel.text = overview
         overviewLabel.sizeToFit()
+        
+        navItem.title = title
         
         if let poster_path = movie["poster_path"] as? String {
             let baseUrl = "https://image.tmdb.org/t/p/w500"
@@ -53,8 +56,6 @@ class DetailViewController: UIViewController {
             })
             posterImageView.setImageWith(imageUrl!)
         }
-        
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {

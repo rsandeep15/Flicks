@@ -105,6 +105,7 @@
                     <navigationItem key="navigationItem" id="5MC-X4-YHW"/>
                     <connections>
                         <outlet property="infoView" destination="1VF-LV-gBM" id="s3d-vD-USN"/>
+                        <outlet property="navItem" destination="5MC-X4-YHW" id="6O9-Ky-1bU"/>
                         <outlet property="overviewLabel" destination="ZIG-9X-Ixi" id="VQa-Wm-X2O"/>
                         <outlet property="posterImageView" destination="der-NK-NQo" id="Thc-Wc-Ph0"/>
                         <outlet property="scrollView" destination="ZxS-qg-eFL" id="ffJ-9n-mJN"/>
