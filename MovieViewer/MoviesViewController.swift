@@ -11,7 +11,7 @@ import AFNetworking
 import MBProgressHUD
 
 class MoviesViewController: UIViewController, UICollectionViewDataSource, UISearchBarDelegate {
-
+    
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
     var endpoint: String? = ""
@@ -22,7 +22,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource, UISear
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         collectionView.dataSource = self
         searchBar.delegate = self
@@ -35,7 +35,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource, UISear
         collectionView.insertSubview(refreshControl, at: 0)
         initialFetch()
         
-
+        
     }
     
     // When the app is launch, perform a network fetch to get an initial set of movies
@@ -93,9 +93,9 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource, UISear
         task.resume()
         
         
-
+        
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -120,13 +120,15 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource, UISear
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! ImageCell
         let movie = filteredMovies![indexPath.row]
-    
+        
         // No need to modify selection style of UICollection cell
         
         if let poster_path = movie["poster_path"] as? String {
             let baseUrl = "https://image.tmdb.org/t/p/w500"
             let imageUrl = URL(string: baseUrl + poster_path)
             let imageRequest = NSURLRequest(url: imageUrl!)
+            
+            // Set the image associated with the cell
             cell.movie.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
                 if imageResponse != nil {
                     cell.movie.alpha = 0.0
@@ -139,13 +141,13 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource, UISear
                 }
                 
             }, failure: { (imageRequest, imageResponse, error) in
-                // TODO error handling
+                print("An error occurred in retrieving the images")
             })
-
-
+            
+            
         }
         
-
+        
         
         return cell
     }
