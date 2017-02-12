@@ -10,7 +10,7 @@ import UIKit
 import AFNetworking
 import MBProgressHUD
 
-class MoviesViewController: UIViewController, UICollectionViewDataSource {
+class MoviesViewController: UIViewController, UICollectionViewDataSource, UISearchBarDelegate {
 
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]?
@@ -18,17 +18,23 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
         collectionView.dataSource = self
+        searchBar.delegate = self
         
         // Initialize a UIRefreshControl
         let refreshControl = UIRefreshControl()
+        refreshControl.backgroundColor = UIColor.white
+        refreshControl.tintColor = UIColor.purple
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
         collectionView.insertSubview(refreshControl, at: 0)
         initialFetch()
+        
 
     }
     
@@ -45,12 +51,13 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
         let task: URLSessionDataTask = session.dataTask(with: request) { (data: Data?, response: URLResponse?, error: Error?) in
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
-                    //print(dataDictionary)
-                    
                     self.movies = dataDictionary["results"] as? [NSDictionary]
                     self.collectionView.reloadData()
+                    self.filteredMovies = self.movies
                 }
             }
+            
+            
             MBProgressHUD.hide(for: self.view, animated: true)
             
         }
@@ -73,6 +80,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
             if let data = data {
                 if let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
                     self.movies = dataDictionary["results"] as? [NSDictionary]
+                    self.filteredMovies = self.movies
                     
                     // Reload the tableView now that there is new data
                     self.collectionView.reloadData()
@@ -95,18 +103,23 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
     
     // Decides how many collection view cells to generate
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if let movies = movies {
-            return movies.count
+        if let filteredMovies = filteredMovies {
+            return filteredMovies.count
         }
         else {
-            return 0
+            if let movies = movies {
+                return movies.count
+            }
+            else {
+                return 0
+            }
         }
     }
     
     // Associates a cell with an index on the CollectionView
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! ImageCell
-        let movie = movies![indexPath.row]
+        let movie = filteredMovies![indexPath.row]
     
         // No need to modify selection style of UICollection cell
         
@@ -115,16 +128,13 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
             let imageUrl = URL(string: baseUrl + poster_path)
             let imageRequest = NSURLRequest(url: imageUrl!)
             cell.movie.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
-                // imageResponse will be nil if the image is cached
                 if imageResponse != nil {
-                    print("Image was NOT cached, fade in image")
                     cell.movie.alpha = 0.0
                     cell.movie.image = image
                     UIView.animate(withDuration: 0.3, animations: { () -> Void in
                         cell.movie.alpha = 1.0
                     })
                 } else {
-                    print("Image was cached so just update the image")
                     cell.movie.image = image
                 }
                 
@@ -140,11 +150,29 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
         return cell
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // Filter movies by the search query. Matches the start of words in the movie titles
+        filteredMovies = searchText.isEmpty ? movies : movies?.filter({ (item: NSDictionary) -> Bool in
+            let title = item["title"] as! String
+            let words = title.lowercased().components(separatedBy: " ")
+            for index in 0...(words.count-1){
+                // Look at the beginnings of every word, and return true as soon as a match is found
+                let match = words[index].hasPrefix(searchText.lowercased())
+                if (match){
+                    return match
+                }
+            }
+            // If no matches, return false
+            return false
+        })
+        collectionView.reloadData()
+    }
+    
     // Prepares the cell on the view to transition to a detailed view
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let cell = sender as! UICollectionViewCell
         let indexPath = collectionView.indexPath(for: cell)
-        let movie = movies![(indexPath?.row)!] as NSDictionary
+        let movie = filteredMovies![(indexPath?.row)!] as NSDictionary
         
         let detailViewController = segue.destination as! DetailViewController
         detailViewController.movie = movie

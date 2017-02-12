@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let nowPlayingNavController = storyboard.instantiateViewController(withIdentifier: "MoviesNavigationController") as! UINavigationController
         let nowPlayingVC = nowPlayingNavController.topViewController as! MoviesViewController
+        nowPlayingVC.navigationItem.title = "Now Playing"
         nowPlayingVC.endpoint = "now_playing"
         
         // Customizing the navigation controller
@@ -31,6 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let topRatedNavController = storyboard.instantiateViewController(withIdentifier: "MoviesNavigationController") as! UINavigationController
         
         let topRatedVC = topRatedNavController.topViewController as! MoviesViewController
+        topRatedVC.navigationItem.title = "Top Rated"
         topRatedVC.endpoint = "top_rated"
         
         topRatedNavController.tabBarItem.title = "Top Rated"
