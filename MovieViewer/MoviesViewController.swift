@@ -32,6 +32,7 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
 
     }
     
+    // When the app is launch, perform a network fetch to get an initial set of movies
     func initialFetch() {
         // Network Request Snippet
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
@@ -91,6 +92,8 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // Decides how many collection view cells to generate
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let movies = movies {
             return movies.count
@@ -104,11 +107,32 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ImageCell", for: indexPath) as! ImageCell
         let movie = movies![indexPath.row]
+    
+        // No need to modify selection style of UICollection cell
         
         if let poster_path = movie["poster_path"] as? String {
             let baseUrl = "https://image.tmdb.org/t/p/w500"
             let imageUrl = URL(string: baseUrl + poster_path)
-            cell.movie.setImageWith(imageUrl!)
+            let imageRequest = NSURLRequest(url: imageUrl!)
+            cell.movie.setImageWith(imageRequest as URLRequest, placeholderImage: nil, success: { (imageRequest, imageResponse, image) in
+                // imageResponse will be nil if the image is cached
+                if imageResponse != nil {
+                    print("Image was NOT cached, fade in image")
+                    cell.movie.alpha = 0.0
+                    cell.movie.image = image
+                    UIView.animate(withDuration: 0.3, animations: { () -> Void in
+                        cell.movie.alpha = 1.0
+                    })
+                } else {
+                    print("Image was cached so just update the image")
+                    cell.movie.image = image
+                }
+                
+            }, failure: { (imageRequest, imageResponse, error) in
+                // TODO error handling
+            })
+
+
         }
         
 
@@ -126,13 +150,4 @@ class MoviesViewController: UIViewController, UICollectionViewDataSource {
         detailViewController.movie = movie
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-
 }
