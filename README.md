@@ -34,7 +34,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='demo_old.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
@@ -100,7 +100,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 Describe any challenges encountered while building the app.
 
 - There would be times were I would encounter issues because I would unwrap a nil value
-- Filtering results required keeping track of two data structures and it was easy to confuse them and get subtle bugs 
+- Filtering results required keeping track of two data structures and it was easy to confuse them and get subtle bugs
 
 ## License
 
