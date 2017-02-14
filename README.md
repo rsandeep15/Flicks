@@ -99,7 +99,7 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 Describe any challenges encountered while building the app.
 
-- There would be times were I would encounter issues because I would unwrap a nil value
+- There would be times where I would encounter issues because I would unwrap a nil value
 - Filtering results required keeping track of two data structures and it was easy to confuse them and get subtle bugs
 
 ## License
